@@ -1,0 +1,137 @@
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片标记</title>
+  <style type="text/css">
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-flow: row nowrap;
+      min-height: 100vh;
+    }
+
+    .sider {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: flex-start;
+      flex-basis: 100px;
+      border-right: 1px solid #ddd;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    #image {
+      margin: 30px;
+    }
+
+    .submit {
+      border: none;
+      border-radius: 3px;
+      color: #FFF;
+      background-color: slateblue;
+      height: 25px;
+      width: 91px;
+      line-height: 25px;
+      margin-left: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sider">
+      <input id="image" type="file" accept="image/*">
+      <button class="submit" type="button">标记图片</button>
+    </div>
+    <div class="content">
+      <canvas id="canvas" width="500" height="500"></canvas>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+  const data = [
+    {
+      location: {
+        height: 100,
+        width: 100,
+        top: 5,
+        left: 5
+      },
+      name: 'demo1',
+      score: 0.9808985656
+    },
+    {
+      location: {
+        height: 100,
+        width: 100,
+        top: 200,
+        left: 200
+      },
+      name: 'demo1',
+      score: 0.9808985656
+    }
+  ];
+
+  const submit = document.querySelector('.submit');
+  const image = document.querySelector('#image');
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext("2d");
+
+  /**
+   * 加载图片
+   */
+  image.addEventListener('change', function () {
+    if (this.files && this.files[0]) {
+      var file = new FileReader();
+      file.onload = function (ev) {
+        var img = new Image();
+        img.onload = function () {
+          canvasWidth = img.naturalWidth;
+          canvasHeight = img.naturalHeight;
+          canvas.width = canvasWidth;
+          canvas.height = canvasHeight;
+          ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+        };
+        img.src = ev.target.result;
+      };
+      file.readAsDataURL(this.files[0]);
+    }
+  }, false)
+
+  /**
+   * 开始图片处理
+   */
+  submit.addEventListener('click', function () {
+    if (image.value) {
+      painting(data);
+    } else {
+      alert('请选择图片!')
+    }
+  }, false)
+
+  /**
+   * 处理图片方法
+   */
+  function painting(data) {
+    ctx.strokeStyle = '#F00'
+    data.forEach(element => {
+      const { location: { width, height, top, left } } = element;
+      ctx.moveTo(left, top);
+      ctx.lineTo(left + width, top);
+      ctx.lineTo(left + width, top + height);
+      ctx.lineTo(left, top + height);
+      ctx.lineTo(left, top);
+      ctx.stroke();
+    });
+  }
+</script>
+
+</html>
